@@ -1,49 +1,20 @@
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { Home } from "./pages/Home";
-import { ApolloProvider } from "@apollo/client";
-import client from "./config/client";
+import { Provider } from "react-redux";
+import store from "./store/index";
 
 function App() {
   return (
-    <ApolloProvider client={client}>
+    <Provider store={store}>
       <Router>
-        <div className="wrapper row0">
-        <div id="topbar" class="hoc clear">
-          <div class="fl_left">
-            <ul class="nospace">
-              <li>
-                <a href="index.html">
-                  <i class="fas fa-home fa-lg"></i>
-                </a>
-              </li>
-              <li>
-                <a href="#">TENTANG KAMI</a>
-              </li>
-              <li>
-                <a href="#">STUNTING DI INDONESIA</a>
-              </li>
-            </ul>
-          </div>
-          <div class="fl_right">
-            <ul class="nospace">
-              <li>
-                <i class="fas fa-phone rgtspace-5"></i> +(62)812-xxxx-xxxx
-              </li>
-              <li>
-                <i class="fas fa-envelope rgtspace-5"></i> info@domain.com
-              </li>
-            </ul>
-          </div>
-        </div>
-        </div>
-       
+        
         <Switch>
           <Route exact path="/">
             <Home />
           </Route>
         </Switch>
       </Router>
-    </ApolloProvider>
+    </Provider>
   );
 }
 

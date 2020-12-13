@@ -94,7 +94,7 @@ File: Layout CSS
 
 #comments form{display:block; width:100%;}
 #comments input, #comments textarea{width:100%; padding:10px; border:1px solid;}
-#comments textarea{overflow:auto;}
+/* #comments textarea{overflow:auto;} */
 #comments div{margin-bottom:15px;}
 #comments input[type="submit"], #comments input[type="reset"]{display:inline-block; width:auto; min-width:150px; margin:0; padding:8px 5px; cursor:pointer;}
 
@@ -487,7 +487,7 @@ table a, #comments a{background-color:inherit;}
 /* Other
 --------------------------------------------------------------------------------------------------------------- */
 @media screen and (max-width:650px){
-	.scrollable{display:block; width:100%; margin:0 0 30px 0; padding:0 0 15px 0; overflow:auto; overflow-x:scroll;}
+	/* .scrollable{display:block; width:100%; margin:0 0 30px 0; padding:0 0 15px 0; overflow:auto; overflow-x:scroll;} */
 	.scrollable table{margin:0; padding:0; white-space:nowrap;}
 
 	.inline li{display:block; margin-bottom:10px;}

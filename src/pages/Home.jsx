@@ -1,6 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDataBabies } from "../store/action/BabiesAction";
+
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
+import { PetaSebaran } from "../components/PetaSebaran";
+import { DonateModal } from "../components/DonateModal";
+import { DonationForm } from "../components/DonationForm";
+import { TopHead } from "../components/TopHead";
+
 import "ol/ol.css";
 import { Circle, Fill, Style } from "ol/style";
 import { Feature, Map, Overlay, View } from "ol/index";
@@ -9,29 +17,23 @@ import { Point } from "ol/geom";
 import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer";
 import { useGeographic } from "ol/proj";
 
-var shapefile = require("shapefile");
+import CanvasJSReact from "../asset/canvasjs.react";
 
 export const Home = () => {
   useGeographic();
-  var place = [106.8266, -6.175]; //pinpoint jakarta
-  // list data persebaran
-  var place1 = [106.8266, -6.18];
-  var point = new Point(place);
-  var point1 = new Point(place1);
+  const dispatch = useDispatch();
+  const { data } = useSelector((state) => state.ReducerStunting.dataStunting);
+  const dataLoading = useSelector((state) => state.ReducerStunting.dataLoading);
 
+  var CanvasJS = CanvasJSReact.CanvasJS;
+  var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+  const dataNormal = [];
+  const dataStunting = [];
+  const dataLabel = [];
+  // data diandaikan hasil dari fetching
   useEffect(() => {
-    shapefile
-      .open("web-client/src/map/SHP_Indonesia_provinsi")
-      .then((source) =>
-        source.read().then(function log(result) {
-          if (result.done) return;
-          console.log(result.value);
-          console.log("a");
-          return source.read().then(log);
-        })
-      )
-      .catch((error) => console.error(error.stack));
-  });
+    dispatch(fetchDataBabies());
+  }, []);
 
   useEffect(() => {
     var map = new Map({
@@ -72,11 +74,116 @@ export const Home = () => {
         }),
       ],
     });
-  }, [point]);
+  });
+
+  if (dataLoading) {
+    return <p>Loading... Please Wait</p>;
+  }
+
+  //memisahkan data berdasarkan status
+  for (let i = 0; i < data.length; i++) {
+    console.log(dataNormal);
+    if (data[i].status == "normal") {
+      dataNormal.push(data[i]);
+    } else {
+      dataStunting.push(data[i]);
+    }
+  }
+
+  const options = {
+    exportEnabled: true,
+    animationEnabled: true,
+    title: {
+      text: "",
+    },
+    data: [
+      {
+        type: "pie",
+        startAngle: 75,
+        toolTipContent: "<b>{label}</b>: {y} anak",
+        showInLegend: "true",
+        legendText: "{label}",
+        indexLabelFontSize: 16,
+        indexLabel: "{label} - {y} anak",
+        dataPoints: [
+          { y: dataNormal.length, label: "Anak Normal" },
+          { y: dataStunting.length, label: "Anak dengan Kasus Stunting" },
+        ],
+      },
+    ],
+  };
+
+  // const options1 = {
+  //   animationEnabled: true,
+  //   title: {
+  //     text: "Monthly Sales - 2017",
+  //   },
+  //   axisX: {
+  //     valueFormatString: "MMM",
+  //   },
+  //   axisY: {
+  //     title: "Sales (in USD)",
+  //     prefix: "$",
+  //   },
+  //   data: [
+  // {
+  //   yValueFormatString: "$#,###",
+  //   xValueFormatString: "MMMM",
+  //   type: "spline",
+  //   dataPoints: [
+  //     { x: new Date(2017, 0), y: 25060 },
+  //     { x: new Date(2017, 1), y: 27980 },
+  //     { x: new Date(2017, 2), y: 42800 },
+  //     { x: new Date(2017, 3), y: 32400 },
+  //     { x: new Date(2017, 4), y: 35260 },
+  //     { x: new Date(2017, 5), y: 33900 },
+  //     { x: new Date(2017, 6), y: 40000 },
+  //     { x: new Date(2017, 7), y: 52500 },
+  //     { x: new Date(2017, 8), y: 32300 },
+  //     { x: new Date(2017, 9), y: 42000 },
+  //     { x: new Date(2017, 10), y: 37160 },
+  //     { x: new Date(2017, 11), y: 38400 },
+  //   ],
+  // },
+  // {
+  // yValueFormatString: "$#,###",
+  // xValueFormatString: "MMMM",
+  // type: "spline",
+  // dataPoints: [
+  // { x: "22", y: 22000 },
+  // { x: new Date(2017, 1), y: 27980 },
+  // { x: new Date(2017, 2), y: 42800 },
+  // { x: new Date(2017, 3), y: 32400 },
+  // { x: new Date(2017, 4), y: 35260 },
+  // { x: new Date(2017, 5), y: 33900 },
+  // { x: new Date(2017, 6), y: 40000 },
+  // { x: new Date(2017, 7), y: 52500 },
+  // { x: new Date(2017, 8), y: 32300 },
+  // { x: new Date(2017, 9), y: 42000 },
+  // { x: new Date(2017, 10), y: 37160 },
+  // { x: new Date(2017, 11), y: 38400 },
+  //       ],
+  //     },
+  //   ],
+  // };
+  //define data label
+  // for (let i = 0; i < data.length; i++) {
+  //   dataLabel.push(data[i].createdAt);
+  // }
+
+  var place = [106.8266, -6.175]; //pinpoint jakarta
+  // list data persebaran
+  var place1 = [106.8266, -6.18];
+  var point = new Point(place);
+  var point1 = new Point(place1);
 
   return (
-    <>
-      <div class="wrapper row0">
+    <div className="d-flex">
+      <div className="sidebar">
+        <DonationForm style={{ height: "1000px" }} />
+      </div>
+      <div className="wrapper row0" style={{marginLeft:"400px"}}>
+        <TopHead / >
         <Header />
         <div
           class="wrapper bgded overlay"
@@ -90,14 +197,20 @@ export const Home = () => {
               <p>Bayiku Sehat</p>
               <h3 class="heading">Mari Bersama Ceriakan Hari Mereka</h3>
               <p>Bayi Sehat, Indonesia Kuat</p>
-              <footer>
-                <a class="btn" href="#">
+              {/* <footer>
+                <a
+                  href="#"
+                  type="button"
+                  className="btn btn-primary"
+                  data-toggle="modal"
+                  data-target="#exampleModal"
+                >
                   Jadi Donatur
                 </a>
                 <a class="btn" href="#">
                   Jadi Relawan
                 </a>
-              </footer>
+              </footer> */}
             </article>
           </div>
         </div>
@@ -132,42 +245,30 @@ export const Home = () => {
           <main class="hoc container clear">
             <div class="sectiontitle">
               <h6 className="fs-1 fw-bolder">Seputar Stunting</h6>
-              <p className="fs-5">Berita Terkini Mengenai Stunting</p>
+              <p className="fs-5">
+                Data Terkini Mengenai Stunting di Indonesia
+              </p>
             </div>
-            <ul class="nospace group overview">
-              <li class="one_third">
-                <figure>
-                  <a href="#">
-                    <img src="images/demo/348x261.png" alt="" />
-                  </a>
-                  <figcaption>
-                    <h6 class="heading">Bayiku Sehat</h6>
-                    <p>Bayiku Sehat</p>
-                  </figcaption>
-                </figure>
-              </li>
-            </ul>
+            <div className="row one_third">
+              <CanvasJSChart options={options} />
+            </div>
+            
             <div class="clear"></div>
           </main>
         </div>
         {/* peta persebaran */}
-        <div class="wrapper gradient">
-          <section id="cta" class="hoc container clear">
-            <div class="sectiontitle">
-              <h6 className="heading fs-1 fw-bolder">Peta Persebaran</h6>
-              <p className="heading fs-5 fw-bolder">Stunting di Indonesia</p>
-              <div id="map" class="map"></div>
-            </div>
-          </section>
-        </div>
-
+        <PetaSebaran />
         {/* footer start */}
         <Footer />
 
         <a id="backtotop" href="#top">
           <i class="fas fa-chevron-up"></i>
         </a>
+        {/* <!-- Modal --> */}
+        {/* <DonateModal /> */}
       </div>
-    </>
+
+      
+    </div>
   );
 };

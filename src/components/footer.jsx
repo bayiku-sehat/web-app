@@ -19,6 +19,7 @@ export const Footer = () => {
           </div>
           <div class="one_third">
             <h6 class="heading">Berperan Aktif</h6>
+              {/* <DonationForm /> */}
             <ul class="nospace linklist">
               <li>
                 <Link to="/">Penggalangan Dana</Link>
